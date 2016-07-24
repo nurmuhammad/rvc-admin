@@ -1,6 +1,6 @@
 package rvc.admin.model;
 
-import rvc.cms.$;
+import rvc.admin.$;
 
 import java.util.HashMap;
 import java.util.Map;
