@@ -1,2 +1,1 @@
-# rvc-admin
-simple admin panel
+# rvcjava-admin
