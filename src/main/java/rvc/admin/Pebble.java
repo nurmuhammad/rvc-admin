@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import rvc.ModelAndView;
 import rvc.TemplateEngine;
 import rvc.admin.init.Config;
+import rvc.admin.pebble.RvcExtention;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -39,6 +40,7 @@ public class Pebble extends TemplateEngine {
                 .Builder()
                 .cacheActive(!Application.debug())
                 .loader(loader)
+                .extension(new RvcExtention())
                 .build();
     }
 

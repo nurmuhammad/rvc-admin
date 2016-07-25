@@ -1,12 +1,11 @@
 package rvc.admin;
 
 import org.h2.jdbcx.JdbcConnectionPool;
-import org.h2.tools.Backup;
-import org.h2.tools.Recover;
 import org.h2.tools.Script;
 import org.javalite.activejdbc.Base;
 import rvc.admin.init.Config;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
@@ -19,9 +18,18 @@ public class Database {
 
     JdbcConnectionPool pool;
 
+    DataSource dataSource;
+
     Database() {
         pool = JdbcConnectionPool.create(Config.get("database.jdbc.url"), Config.get("database.user"), Config.get("database.password"));
         pool.setMaxConnections(Config.get("ds.pool.max-size", 30));
+
+        /*JdbcDataSource ds = new JdbcDataSource();
+        ds.setURL(Config.get("database.jdbc.url"));
+        ds.setUser(Config.get("database.user"));
+        ds.setPassword(Config.get("database.password"));
+        dataSource = ds;*/
+
     }
 
     public static JdbcConnectionPool pool() {
@@ -30,6 +38,7 @@ public class Database {
 
     public static void open() {
         Base.open(pool());
+//        Base.open(instance.dataSource);
     }
 
     public static void close() {

@@ -54,8 +54,8 @@ public class User extends SettingsModel {
         set("changed", changed);
     }
 
-    public Long lastLogin() {
-        return (Long) get("last_login");
+    public Integer lastLogin() {
+        return  getInteger("last_login");
     }
 
     public void lastLogin(int lastLogin) {
@@ -84,5 +84,13 @@ public class User extends SettingsModel {
 
     public void data(String data) {
         setString("data", data);
+    }
+
+    public String department() {
+        return getString("department");
+    }
+
+    public void department(String department) {
+        setString("department", department);
     }
 }
