@@ -3,6 +3,7 @@ package rvc.admin;
 import org.h2.tools.Server;
 import rvc.RvcServer;
 import rvc.admin.controllers.AdminController;
+import rvc.admin.controllers.DepartmentController;
 import rvc.admin.controllers.LoginController;
 import rvc.admin.controllers.UserController;
 import rvc.admin.init.Config;
@@ -25,6 +26,7 @@ public class Main {
         rvcServer.classes(
                 LoginController.class,
                 UserController.class,
+                DepartmentController.class,
                 AdminController.class
         );
 

@@ -15,10 +15,10 @@ import java.util.Map;
  */
 
 @Controller
-public class UserController {
+public class DepartmentController {
 
-    @GET("users")
-    @Template(viewName = "users/index.html")
+    @GET("departments")
+    @Template(viewName = "department/index.html")
     Object users(){
         Database.open();
         List users = User.findAll().load();
