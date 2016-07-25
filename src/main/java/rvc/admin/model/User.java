@@ -78,4 +78,11 @@ public class User extends SettingsModel {
         set("status", status);
     }
 
+    public String data() {
+        return getString("data");
+    }
+
+    public void data(String data) {
+        setString("data", data);
+    }
 }

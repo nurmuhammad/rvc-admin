@@ -15,6 +15,16 @@ import rvc.http.Session;
 @Controller
 public class LoginController {
 
+    @GET("/")
+    void index(){
+        User user = Session.get().attribute("user");
+        if (user == null) {
+            Response.get().redirect("/login");
+        } else {
+            Response.get().redirect("/administer");
+        }
+    }
+
     @GET
     @Template
     public Object login() {
@@ -44,7 +54,13 @@ public class LoginController {
 
     }
 
-    @Before("administer, administer/*")
+    @GET
+    void logout(){
+        Session.get().attribute("user", null);
+        Response.get().redirect("/login");
+    }
+
+    @Before("administer, administer/*, users")
     public void before() {
         User user = Session.get().attribute("user");
         if (user == null) {

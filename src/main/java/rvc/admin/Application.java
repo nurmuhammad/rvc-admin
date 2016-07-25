@@ -23,7 +23,7 @@ public class Application {
             user = new User();
             user.set(
                     "email", "admin",
-                    "password", $.encode("1"),
+                    "password", $.encode("sp@rk"),
                     "roles", "admin",
                     "created", $.timestamp(),
                     "changed", $.timestamp(),
