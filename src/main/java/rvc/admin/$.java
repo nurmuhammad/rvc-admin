@@ -11,7 +11,7 @@ import java.util.*;
 public class $ extends rvc.$ {
 
     public static Map<String, String> settings2map(String settings) {
-        if (settings == null || settings.length() < 2) return new HashMap<>();
+        if (settings == null || settings.length() < 2) return new LinkedHashMap<>();
         return Splitter.on("; ").withKeyValueSeparator(":=").split(settings);
     }
 

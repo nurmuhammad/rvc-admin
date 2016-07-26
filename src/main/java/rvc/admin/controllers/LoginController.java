@@ -60,7 +60,7 @@ public class LoginController {
         Response.get().redirect("/login");
     }
 
-    @Before("administer, administer/*, users, users/*, departments, departments/*")
+    @Before("administer, administer/*, user, user/*, department, department/*")
     public void before() {
         User user = Session.get().attribute("user");
         if (user == null) {

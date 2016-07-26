@@ -50,7 +50,7 @@ public class User extends SettingsModel {
         return (Integer) get("changed");
     }
 
-    public void changed(Long changed) {
+    public void changed(Integer changed) {
         set("changed", changed);
     }
 

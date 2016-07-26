@@ -2,7 +2,7 @@ package rvc.admin.model;
 
 import rvc.admin.$;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -22,7 +22,7 @@ public abstract class SettingsModel extends aModel {
 
     public Map<String, String> map() {
         if (settings == null) {
-            settings = new HashMap<>($.settings2map(settings()));
+            settings = new LinkedHashMap<>($.settings2map(settings()));
         }
         return settings;
     }

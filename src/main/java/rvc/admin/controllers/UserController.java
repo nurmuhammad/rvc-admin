@@ -17,11 +17,11 @@ import java.util.Map;
 @Controller
 public class UserController {
 
-    @GET("users")
+    @GET("user")
     @Template(viewName = "users/index.html")
-    Object users(){
+    Object index(){
         Database.open();
-        List users = User.findAll().load();
+        List users = User.findAll().orderBy("id").load();
         Map<String, Object> map = new HashMap<>();
         map.put("users", users);
         Database.close();

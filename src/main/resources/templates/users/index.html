@@ -9,7 +9,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">User Management
-                        <button type="button" class="btn btn-primary btn-circle pull-right"><i class="fa fa-plus"></i></button>
+                        <a href="#" type="button" class="btn btn-primary btn-circle pull-right"><i class="fa fa-plus"></i></a>
                     </h1>
                 </div>
 
@@ -36,7 +36,13 @@
                                 <td>{{user.roles}}</td>
                                 <td>{{ d(user.lastLogin) | date("dd.MM.yyyy HH:mm") }}<br/>{{user.lastIp}}</td>
                                 <td>{{user.status}}</td>
-                                <td>Edit / Delete</td>
+                                <td>
+                                    {% if user.roles equals "admin" %}
+                                    <i class="fa fa-lock"></i>
+                                    {% else %}
+                                    <a href="/user/edit/{{user.id}}">Edit</a> / <a href="/user/delete/{{user.id}}" onclick="javascript: return confirm('Are you sure to delete this item?')">Delete</a>
+                                    {% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                             </tbody>
