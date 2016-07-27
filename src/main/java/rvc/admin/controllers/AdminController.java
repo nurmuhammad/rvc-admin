@@ -1,11 +1,17 @@
 package rvc.admin.controllers;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import rvc.$;
 import rvc.admin.Database;
+import rvc.admin.converter.ExcelToHtmlConverter;
 import rvc.admin.model.Department;
 import rvc.admin.model.User;
 import rvc.ann.Controller;
@@ -13,12 +19,17 @@ import rvc.ann.GET;
 import rvc.ann.POST;
 import rvc.ann.Template;
 import rvc.http.Request;
+import rvc.http.Response;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +77,8 @@ public class AdminController {
         fill(inputStream, department);
 
         Database.close();
-        return "Done! <br/>" + filename + "<br/>" + department.name();
+        Response.get().redirect("/user");
+        return "Success & Done! <br/>" + filename + "<br/>" + department.name();
     }
 
     void fill(InputStream inputStream, Department department) throws Exception {
@@ -124,6 +136,7 @@ public class AdminController {
         CellValue cellValue;
 
         for (User user : users) {
+
             cellReference = new CellReference("d1");
             row = sheet.getRow(cellReference.getRow());
             cell = row.getCell(cellReference.getCol());
@@ -150,10 +163,36 @@ public class AdminController {
             } catch (Exception ignored) {
             }
 
+
+            ExcelToHtmlConverter converter = ExcelToHtmlConverter.process0(wb);
+            Element stylesheetElement = converter.getHtmlDocumentFacade().getStylesheetElement();
+            NodeList nodeList = converter.getHtmlDocumentFacade().getBody().getElementsByTagName("table");
+            Node node = nodeList.item(0);
+            System.out.println(node.getTextContent());
+            System.out.println(stylesheetElement.getTextContent());
+
+            DOMSource domSource = new DOMSource(node);
+            StringWriter writer = new StringWriter();
+
+            StreamResult streamResult = new StreamResult(writer);
+
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer serializer = tf.newTransformer();
+            serializer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            serializer.setOutputProperty(OutputKeys.INDENT, "no");
+            serializer.setOutputProperty(OutputKeys.METHOD, "html");
+
+            streamResult.getWriter().append("<style>");
+            streamResult.getWriter().append(stylesheetElement.getTextContent());
+            streamResult.getWriter().append("</style>");
+            serializer.transform(domSource, streamResult);
+
+            user.data(((StringWriter)streamResult.getWriter()).getBuffer().toString());
+
             user.saveIt();
+
         }
         //          {2} tugadi
-
 
     }
 

@@ -40,7 +40,9 @@
                                     {% if user.roles equals "admin" %}
                                     <i class="fa fa-lock"></i>
                                     {% else %}
-                                    <a href="/user/edit/{{user.id}}">Edit</a> / <a href="/user/delete/{{user.id}}" onclick="javascript: return confirm('Are you sure to delete this item?')">Delete</a>
+                                    <a href="/user/edit/{{user.id}}">Edit</a> /
+                                    <a href="/user/delete/{{user.id}}" onclick="javascript: return confirm('Are you sure to delete this item?')">Delete</a> /
+                                    <a href="/user/data/{{user.id}}">Data</a>
                                     {% endif %}
                                 </td>
                             </tr>
