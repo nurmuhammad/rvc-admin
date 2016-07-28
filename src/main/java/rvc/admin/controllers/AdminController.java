@@ -1,11 +1,9 @@
 package rvc.admin.controllers;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -20,7 +18,6 @@ import rvc.http.Response;
 import rvc.http.Session;
 
 import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -55,40 +52,51 @@ public class AdminController {
     @GET
     @Template(viewName = "admin/index.html")
     Object administer() {
-        Database.open();
+        Map map = null;
+        try {
+            Database.open();
 
-        Map map = new HashMap();
-        List<Department> departments = Department.findAll().load();
-        map.put("departments", departments);
-        Database.close();
+            map = new HashMap();
+            List<Department> departments = Department.findAll().load();
+            map.put("departments", departments);
+
+        } catch (Exception ignored) {}
+        finally {
+            Database.close();
+        }
 
         return map;
     }
 
     @POST("administer/upload")
     Object upload() throws Exception {
-        Request req = Request.get();
-        if (req.raw().getAttribute("org.eclipse.jetty.multipartConfig") == null) {
-            MultipartConfigElement multipartConfigElement = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
-            req.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
+        try {
+            Database.open();
+
+            Request req = Request.get();
+            if (req.raw().getAttribute("org.eclipse.jetty.multipartConfig") == null) {
+                MultipartConfigElement multipartConfigElement = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
+                req.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
+            }
+
+            String id = req.queryParams("department");
+            Long intID = Long.valueOf(id);
+
+            Department department = Department.findFirst("id=?", intID);
+            User.delete("department=? and email!=?", department.name(), "admin");
+
+            Part file = req.raw().getPart("file");
+            String filename = file.getSubmittedFileName();
+            InputStream inputStream = file.getInputStream();
+
+            fill(inputStream, department);
+
+            Response.get().redirect("/user");
+            return "Success & Done! <br/>" + filename + "<br/>" + department.name();
+        } catch (Exception ignored) {return null;}
+        finally {
+            Database.close();
         }
-
-        String id = req.queryParams("department");
-        Long intID = Long.valueOf(id);
-        Database.open();
-        Department department = Department.findFirst("id=?", intID);
-
-        Part file = req.raw().getPart("file");
-        String filename = file.getSubmittedFileName();
-        InputStream inputStream = file.getInputStream();
-
-        User.delete("department=? and email!=?", department.name(), "admin");
-
-        fill(inputStream, department);
-
-        Database.close();
-        Response.get().redirect("/user");
-        return "Success & Done! <br/>" + filename + "<br/>" + department.name();
     }
 
     void fill(InputStream inputStream, Department department) throws Exception {

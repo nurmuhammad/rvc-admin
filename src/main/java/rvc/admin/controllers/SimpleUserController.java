@@ -27,39 +27,45 @@ public class SimpleUserController {
     @GET("simple")
     @Template(viewName = "admin/data.html")
     Object data() {
-        User user = Session.get().attribute("user");
-        if(user==null) {
-            Response.get().redirect("/login");
-            return null;
-        }
-
-        if("admin".equals(user.roles())){
-            Response.get().redirect("/user");
-            return null;
-        }
-
-        Database.open();
-        String result = null;
-        String start = null;
         try {
-            user = User.findById(user.id());
-            start = user.setting("Дата начало работы");
-            result = user.data();
-        } catch (Exception ignored) {
+            Database.open();
+            User user = Session.get().attribute("user");
+            if(user==null) {
+                Response.get().redirect("/login");
+                return null;
+            }
+
+            if("admin".equals(user.roles())){
+                Response.get().redirect("/user");
+                return null;
+            }
+
+
+            String result = null;
+            String start = null;
+            try {
+                user = User.findById(user.id());
+                start = user.setting("Дата начало работы");
+                result = user.data();
+            } catch (Exception ignored) {
+            }
+
+            Map map = new HashMap();
+            map.put("content", result);
+
+            try {
+                Date date = DateUtil.getJavaDate(Double.valueOf(start));
+                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+                start = dateFormat.format(date);
+                map.put("start", start);
+            } catch (Throwable ignored) {}
+            map.put("simple", true);
+            return map;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            Database.close();
         }
-        Database.close();
-
-        Map map = new HashMap();
-        map.put("content", result);
-
-        try {
-            Date date = DateUtil.getJavaDate(Double.valueOf(start));
-            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-            start = dateFormat.format(date);
-            map.put("start", start);
-        } catch (Exception ignored) {}
-        map.put("simple", true);
-        return map;
     }
 
 }
