@@ -16,7 +16,7 @@ import rvc.http.Session;
 public class LoginController {
 
     @GET("/")
-    void index(){
+    void index() {
         User user = Session.get().attribute("user");
         if (user == null) {
             Response.get().redirect("/login");
@@ -32,7 +32,8 @@ public class LoginController {
     }
 
     @POST("login")
-    public Object loginPost() {
+    @Template(viewName = "login.html")
+    public void loginPost() {
         String email = Request.get().queryParams("email");
         String password = Request.get().queryParams("password");
         Database.open();
@@ -44,23 +45,26 @@ public class LoginController {
                 user.lastLogin($.timestamp());
                 user.lastIp(Request.get().ip());
                 user.saveIt();
-                Response.get().redirect("/administer");
+                if("admin".equals(user.roles())){
+                    Response.get().redirect("/administer");
+                } else {
+                    Response.get().redirect("/simple");
+                }
             }
-        } else {
+        }
+        if(!Response.get().isRedirected()){
             Response.get().redirect("/login");
         }
         Database.close();
-        return null;
-
     }
 
     @GET
-    void logout(){
+    void logout() {
         Session.get().attribute("user", null);
         Response.get().redirect("/login");
     }
 
-    @Before("administer, administer/*, user, user/*, department, department/*")
+    @Before("administer, administer/*, user, user/*, department, department/*, simple, simple/*")
     public void before() {
         User user = Session.get().attribute("user");
         if (user == null) {

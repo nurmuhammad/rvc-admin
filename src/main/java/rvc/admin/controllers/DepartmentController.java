@@ -2,9 +2,11 @@ package rvc.admin.controllers;
 
 import rvc.admin.Database;
 import rvc.admin.model.Department;
+import rvc.admin.model.User;
 import rvc.ann.*;
 import rvc.http.Request;
 import rvc.http.Response;
+import rvc.http.Session;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +18,18 @@ import java.util.Map;
 
 @Controller
 public class DepartmentController {
+
+    @Before("department, department/*")
+    void before(){
+        User user = Session.get().attribute("user");
+        if (user == null) {
+            Response.get().redirect("/login");
+            return;
+        }
+        if(!"admin".equals(user.roles())){
+            Response.get().redirect("/login");
+        }
+    }
 
     @GET("department")
     @Template(viewName = "department/index.html")

@@ -2,16 +2,17 @@ package rvc.admin;
 
 import org.h2.tools.Server;
 import rvc.RvcServer;
-import rvc.admin.controllers.AdminController;
-import rvc.admin.controllers.DepartmentController;
-import rvc.admin.controllers.LoginController;
-import rvc.admin.controllers.UserController;
+import rvc.admin.controllers.*;
 import rvc.admin.init.Config;
 import rvc.ann.Template;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
+
+//        Date date = DateUtil.getJavaDate(42217.0);
+//        System.out.println(date);
+//        System.exit(0);
 
         Database.backupSql();
 
@@ -25,11 +26,11 @@ public class Main {
 
         rvcServer.classes(
                 LoginController.class,
+                SimpleUserController.class,
                 UserController.class,
                 DepartmentController.class,
                 AdminController.class
         );
-
         new Thread(() -> rvcServer.start()).start();
 
         // h2 db-manager server

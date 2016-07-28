@@ -14,12 +14,10 @@ import rvc.admin.Database;
 import rvc.admin.converter.ExcelToHtmlConverter;
 import rvc.admin.model.Department;
 import rvc.admin.model.User;
-import rvc.ann.Controller;
-import rvc.ann.GET;
-import rvc.ann.POST;
-import rvc.ann.Template;
+import rvc.ann.*;
 import rvc.http.Request;
 import rvc.http.Response;
+import rvc.http.Session;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
@@ -41,6 +39,18 @@ import java.util.Map;
 
 @Controller
 public class AdminController {
+
+    @Before("administer, administer/*")
+    void before(){
+        User user = Session.get().attribute("user");
+        if (user == null) {
+            Response.get().redirect("/login");
+            return;
+        }
+        if(!"admin".equals(user.roles())){
+            Response.get().redirect("/login");
+        }
+    }
 
     @GET
     @Template(viewName = "admin/index.html")
@@ -168,8 +178,8 @@ public class AdminController {
             Element stylesheetElement = converter.getHtmlDocumentFacade().getStylesheetElement();
             NodeList nodeList = converter.getHtmlDocumentFacade().getBody().getElementsByTagName("table");
             Node node = nodeList.item(0);
-            System.out.println(node.getTextContent());
-            System.out.println(stylesheetElement.getTextContent());
+//            System.out.println(node.getTextContent());
+//            System.out.println(stylesheetElement.getTextContent());
 
             DOMSource domSource = new DOMSource(node);
             StringWriter writer = new StringWriter();

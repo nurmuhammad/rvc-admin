@@ -1,17 +1,23 @@
-{% extends "..\dashboard-layout.html" %}
+{% extends simple ? "..\simple-layout.html" : "..\dashboard-layout.html" %}
 {% block title %} Administer dashboard | Data view {% endblock %}
 
 {% block content2 %}
 <div id="wrapper">
     <!-- Page Content -->
-    <div id="page-wrapper">
+    <div id="page-wrapper" style="padding: 0">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
+                    <div class="table-responsive">
                     {{content | raw }}
+                    </div>
                 </div>
             </div>
             <!-- /.row -->
+            <div class="row">
+                <div id="container"
+                     style="min-width: 310px; max-width: 1024px; min-height: 500px; height: auto; margin: 0 auto"></div>
+            </div>
         </div>
         <!-- /.container-fluid -->
     </div>
@@ -20,9 +26,198 @@
 {% endblock %}
 
 {% block script %}
+<script src="/js/highcharts.js"></script>
 <script>
-    $(function() {
+    $(function () {
+        var table = $("table.t1")[0];
+        var cc = table.rows[1].cells[2];
+        start = $(cc).text();
+        start = parseFloat(start);
+        d=new Date(1900, 0, start, -12, 0, 0, 0);
+        d = ("0" + d.getDate()).slice(-2)+'.' + ("0"+(d.getMonth()+1)).slice(-2)+'.'+d.getFullYear();
+        $(cc).text(d);
+
         $("table.t1").addClass("table table-bordered");
+
+        $('table.t1 tr td:nth-child(6)').each(function (index) {
+            t = $(this).text();
+            if (t == 'PTT') return false;
+
+            if (t == 'П/Т' && index > 1) {
+                t1 = $('table.t1 tr td:nth-child(5)').get(index + 1);
+                t2 = $(t1).text();
+                cell(t2, $(t1), false);
+                return false;
+            }
+            cell(t, $(this), true);
+        });
+
+        function cell(val, $e, color) {
+            if ($.isNumeric(val)) {
+                if (val >= 1 && color) {
+                    $e.css("background-color", "#4FD11B");
+                } else if (val > 0 && val <= 0.7 && color) {
+                    $e.css("background-color", "#ff3333");
+                }
+                val = parseFloat(val);
+                val = Math.round(val * 100);
+                val = val + "%";
+                $e.text(val);
+            }
+        }
+
+        var cat = [];
+        var skip = true;
+        $('table.t1 tr td:nth-child(2)').each(function (index) {
+            text = $(this).text();
+            if (text.trim() == '') {
+                return false;
+            }
+            if (text != 'Категория' && skip) {
+                return true;
+            }
+            if (text == 'Категория') {
+                skip = false;
+                return true;
+            }
+            cat.push(text);
+        });
+
+        $('table.t1 tr td:nth-child(1)').each(function (index) {
+//            if($(this).text()=="KPI/Бонус") return false;
+            $(this).css("width","1px");
+            $(this).css("font-size", "1px");
+            $(this).css("padding", "0");
+            $(this).css("margin", "0");
+        });
+
+        height = cat.length * 60;
+        $("#container").css("height", height+"px");
+
+
+        var fact = [];
+        var skip = true;
+        $('table.t1 tr td:nth-child(8)').each(function (index) {
+            text = $(this).text();
+            if (text.trim() == '') {
+                return false;
+            }
+            if (text != 'Факт' && skip) {
+                return true;
+            }
+            if (text == 'Факт') {
+                skip = false;
+                return true;
+            }
+            if(fact.length==cat.length) {
+                return false;
+            }
+            fact.push(parseFloat(text));
+        });
+
+        var target = [];
+        var skip = true;
+        $('table.t1 tr td:nth-child(4)').each(function (index) {
+            text = $(this).text();
+            if (text.trim() == '') {
+                return false;
+            }
+            if (text != 'Таргет' && skip) {
+                return true;
+            }
+            if (text == 'Таргет') {
+                skip = false;
+                return true;
+            }
+            if(target.length==cat.length) {
+                return false;
+            }
+            target.push(parseFloat(text));
+        });
+
+        var prog = [];
+        var skip = true;
+        $('table.t1 tr td:nth-child(5)').each(function (index) {
+            text = $(this).text();
+            if (text.trim() == '') {
+                return false;
+            }
+            if (text != 'Прог.' && skip) {
+                return true;
+            }
+            if (text == 'Прог.') {
+                skip = false;
+                return true;
+            }
+            if(prog.length==cat.length) {
+                return false;
+            }
+            prog.push(parseFloat(text));
+        });
+
+        console.log(prog);
+
+        // highcharts
+
+        $('#container').highcharts({
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: 'ТАРГЕТ/ПРОДАЖИ'
+            },
+            xAxis: {
+                categories: cat,
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: '',
+                    align: 'high'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            tooltip: {
+                valueSuffix: ''
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                x: -40,
+                y: 80,
+                floating: true,
+                borderWidth: 1,
+                backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+                shadow: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'ФАКТ',
+                data: fact,
+            }, {
+                name: 'Прог.',
+                data: prog,
+            }, {
+                name: 'Таргет',
+                data: target,
+            }]
+        });
+
     });
 </script>
 {% endblock %}
