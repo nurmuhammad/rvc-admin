@@ -93,7 +93,7 @@ public class UserController {
             user.email(req.queryParams("name"));
             String password = req.queryParams("password");
             if(!$.isEmpty(password)){
-                user.password($.encode(req.queryParams("password")));
+                user.password($.encode(password));
             }
             user.roles(req.queryParams("role"));
             user.department(req.queryParams("department"));

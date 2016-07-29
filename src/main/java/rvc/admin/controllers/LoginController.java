@@ -4,9 +4,13 @@ import rvc.admin.$;
 import rvc.admin.Database;
 import rvc.admin.model.User;
 import rvc.ann.*;
+import rvc.http.Cookie;
 import rvc.http.Request;
 import rvc.http.Response;
 import rvc.http.Session;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author nurmuhammad
@@ -28,7 +32,15 @@ public class LoginController {
     @GET
     @Template
     public Object login() {
-        return "";
+        Map<String, Object> map = new HashMap<>();
+        String username = null;
+        try {
+            username = Cookie.cookies().get("username");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        map.put("username", username);
+        return map;
     }
 
     @POST("login")
@@ -45,6 +57,10 @@ public class LoginController {
                 user.lastLogin($.timestamp());
                 user.lastIp(Request.get().ip());
                 user.saveIt();
+                try {
+                    Cookie.cookie("username", user.email());
+                } catch (Exception e) {}
+
                 if("admin".equals(user.roles())){
                     Response.get().redirect("/administer");
                 } else {
