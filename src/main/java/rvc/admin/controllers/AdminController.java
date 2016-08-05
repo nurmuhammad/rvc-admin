@@ -159,6 +159,7 @@ public class AdminController {
             row = sheet.getRow(cellReference.getRow());
             cell = row.getCell(cellReference.getCol());
             cell.setCellValue(user.email());
+            Thread.sleep(100);
             try {
                 int i = 1;
                 while (true) {

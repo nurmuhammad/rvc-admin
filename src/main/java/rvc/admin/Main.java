@@ -10,10 +10,6 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-//        Date date = DateUtil.getJavaDate(42217.0);
-//        System.out.println(date);
-//        System.exit(0);
-
         Database.backupSql();
 
         RvcServer rvcServer = new RvcServer()

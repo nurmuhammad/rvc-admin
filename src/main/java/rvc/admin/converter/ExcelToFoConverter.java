@@ -184,13 +184,13 @@ public class ExcelToFoConverter extends AbstractExcelConverter
      *         borders, fill, etc.) worth a mention, <tt>true</tt> otherwise
      */
     protected boolean isEmptyStyle( CellStyle cellStyle ) {
-        return cellStyle == null || (
+        return false;/*cellStyle == null || (
                cellStyle.getFillPattern() == 0
             && cellStyle.getBorderTop() == CellStyle.BORDER_NONE
             && cellStyle.getBorderRight() == CellStyle.BORDER_NONE
             && cellStyle.getBorderBottom() == CellStyle.BORDER_NONE
             && cellStyle.getBorderLeft() == CellStyle.BORDER_NONE
-        );
+        );*/
     }
 
     protected boolean processCell( Workbook workbook, Cell cell, Element tableCellElement, int normalWidthPx, int maxSpannedWidthPx,
@@ -349,14 +349,14 @@ public class ExcelToFoConverter extends AbstractExcelConverter
                         ExcelToHtmlUtils.getColor( backgroundColor ) );
         }
 
-        processCellStyleBorder( workbook, cellTarget, "top",
+        /*processCellStyleBorder( workbook, cellTarget, "top",
                 cellStyle.getBorderTop(), cellStyle.getTopBorderColor() );
         processCellStyleBorder( workbook, cellTarget, "right",
                 cellStyle.getBorderRight(), cellStyle.getRightBorderColor() );
         processCellStyleBorder( workbook, cellTarget, "bottom",
                 cellStyle.getBorderBottom(), cellStyle.getBottomBorderColor() );
         processCellStyleBorder( workbook, cellTarget, "left",
-                cellStyle.getBorderLeft(), cellStyle.getLeftBorderColor() );
+                cellStyle.getBorderLeft(), cellStyle.getLeftBorderColor() );*/
 
         Font font = workbook.getFontAt(cellStyle.getFontIndex());
         processCellStyleFont( workbook, blockTarget, font );

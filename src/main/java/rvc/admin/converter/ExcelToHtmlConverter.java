@@ -178,14 +178,14 @@ public class ExcelToHtmlConverter extends AbstractExcelConverter {
                 break;
         }
 
-        buildStyle_border(workbook, style, "top", cellStyle.getBorderTop(),
+        /*buildStyle_border(workbook, style, "top", cellStyle.getBorderTop(),
                 cellStyle.getTopBorderColor());
         buildStyle_border(workbook, style, "right",
                 cellStyle.getBorderRight(), cellStyle.getRightBorderColor());
         buildStyle_border(workbook, style, "bottom",
                 cellStyle.getBorderBottom(), cellStyle.getBottomBorderColor());
         buildStyle_border(workbook, style, "left", cellStyle.getBorderLeft(),
-                cellStyle.getLeftBorderColor());
+                cellStyle.getLeftBorderColor());*/
 
         Font font = workbook.getFontAt(cellStyle.getFontIndex());
         buildStyle_font(workbook, style, font);
